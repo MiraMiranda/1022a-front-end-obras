@@ -8,19 +8,8 @@ type ProdutoType = {
   descricao: string,
   imagem: string
 }
-
-// Tipo para usuários
-type UsuarioType = {
-  id: number,
-  name: string,
-  email: string,
-  created_at: string,
-  updated_at: string
-}
-
 function App() {
   const [produtos, setProdutos] = useState<ProdutoType[]>([])
-  const [usuarios, setUsuarios] = useState<UsuarioType[]>([])
 
   // useEffect para carregar produtos e usuários
   useEffect(() => {
@@ -30,9 +19,6 @@ function App() {
       .then(dados => setProdutos(dados))
 
     // Buscar os usuários
-    fetch("https://one022a-marketplace-e90o.onrender.com/usuarios")
-      .then(resposta => resposta.json())
-      .then(dados => setUsuarios(dados))
   }, [])
 
   return (
