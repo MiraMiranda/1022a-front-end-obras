@@ -55,6 +55,7 @@ function App() {
           <button className="login-button">Login</button>
         </div>
       </header>
+      
      {/* Listagem de Produtos */}
       <div className="produtos-container">
         <h1 className='titulo-produto'>Produtos</h1>
