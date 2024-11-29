@@ -1,25 +1,37 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import CadastroProduto from './componentes/cadastroproduto/CadastroProduto.tsx';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import App from './App.tsx';
+import './index.css';
+import { AuthProvider } from './context/AuthContext'; // Adicionando o AuthProvider
+import Login from './componentes/auth/Login.tsx';  // Componente de Login
+import Cadastro from './componentes/auth/Cadastro.tsx';  // Componente de Cadastro
+import CadastroProduto from './componentes/cadastroproduto/CadastroProduto.tsx';  // Cadastro de Produto
+
+// Definindo as rotas
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
+    element: <App />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/cadastro",
+    element: <Cadastro />,
   },
   {
     path: "/cadastro-produto",
-    element: <CadastroProduto/>,
+    element: <CadastroProduto />,
   },
 ]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>  {/* Encapsulando a aplicação com AuthProvider */}
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
-)
+);
