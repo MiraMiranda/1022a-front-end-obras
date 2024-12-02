@@ -1,80 +1,118 @@
-import {  ChangeEvent, FormEvent, useState } from "react"
-import { useNavigate } from 'react-router-dom';
-function CadastroProduto(){
-    const navigate = useNavigate()
-    const [id,setId] = useState("")
-    const [nome,setNome] = useState("")
-    const [descricao,setDescricao] = useState("")
-    const [preco,setPreco] = useState("")
-    const [imagem,setImagem] = useState("")
-    async function handleForm(event:FormEvent){
-        event.preventDefault()
-        try{
-            const resposta = await fetch("http://localhost:8000/produtos",{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
+import { useState, ChangeEvent, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+
+function ProdutoRegistro() {
+    const redirecionar = useNavigate();
+    const [produtoId, alterarProdutoId] = useState("");
+    const [produtoNome, alterarProdutoNome] = useState("");
+    const [produtoDescricao, alterarProdutoDescricao] = useState("");
+    const [produtoPreco, alterarProdutoPreco] = useState("");
+    const [produtoImagem, alterarProdutoImagem] = useState("");
+    const [produtoEstoque, alterarProdutoEstoque] = useState("");
+
+    async function submeterFormulario(evento: FormEvent) {
+        evento.preventDefault();
+        try {
+            const resposta = await fetch("http://localhost:8000/produtos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
                 },
-                body:JSON.stringify({
-                    id:id,
-                    nome:nome,
-                    descricao:descricao,
-                    preco:preco,
-                    imagem:imagem
-                })
-            })
-            if(resposta.status!=500){
-                alert("Produto Cadastro com Sucesso")
-                navigate("/")
+                body: JSON.stringify({
+                    id: produtoId,
+                    nome: produtoNome,
+                    descricao: produtoDescricao,
+                    preco: produtoPreco,
+                    imagem: produtoImagem,
+                    estoque: produtoEstoque,
+                }),
+            });
+            if (resposta.status !== 500) {
+                alert("Produto cadastrado com sucesso!");
+                redirecionar("/");
+            } else {
+                const mensagemErro = await resposta.text();
+                alert("Erro ao cadastrar produto: " + mensagemErro);
             }
-            else{
-                const mensagem = await resposta.text()
-                alert("Erro ao Cadastrar Produto - Error: "+mensagem)
-            }
+        } catch (erro) {
+            alert("Não foi possível conectar ao servidor.");
         }
-        catch(e){
-            alert("Servidor não está respondendo.")
-        }
-        
     }
-    function handleId(event:ChangeEvent<HTMLInputElement>){
-        setId(event.target.value)
+
+    function atualizarId(evento: ChangeEvent<HTMLInputElement>) {
+        alterarProdutoId(evento.target.value);
     }
-    function handleNome(event:ChangeEvent<HTMLInputElement>){
-        setNome(event.target.value)
+
+    function atualizarNome(evento: ChangeEvent<HTMLInputElement>) {
+        alterarProdutoNome(evento.target.value);
     }
-    function handleDescricao(event:ChangeEvent<HTMLInputElement>){
-        setDescricao(event.target.value)
+
+    function atualizarDescricao(evento: ChangeEvent<HTMLInputElement>) {
+        alterarProdutoDescricao(evento.target.value);
     }
-    function handlePreco(event:ChangeEvent<HTMLInputElement>){
-        setPreco(event.target.value)
+
+    function atualizarPreco(evento: ChangeEvent<HTMLInputElement>) {
+        alterarProdutoPreco(evento.target.value);
     }
-    function handleImagem(event:ChangeEvent<HTMLInputElement>){
-        setImagem(event.target.value)
+
+    function atualizarImagem(evento: ChangeEvent<HTMLInputElement>) {
+        alterarProdutoImagem(evento.target.value);
     }
-    return(
+
+    function atualizarEstoque(evento: ChangeEvent<HTMLInputElement>) {
+        alterarProdutoEstoque(evento.target.value);
+    }
+
+    return (
         <>
-            <h1>Meu Componente de Cadastro de Produtos</h1>
-            <form onSubmit={handleForm}>
+            <h1>Cadastro de Produtos</h1>
+            <form onSubmit={submeterFormulario}>
                 <div>
-                    <input placeholder="Id" type="text" name="id" id="id" onChange={handleId} />
+                    <input
+                        placeholder="ID do Produto"
+                        type="text"
+                        onChange={atualizarId}
+                    />
                 </div>
                 <div>
-                    <input placeholder="Nome" type="text" name="nome" id="nome" onChange={handleNome} />
+                    <input
+                        placeholder="Nome do Produto"
+                        type="text"
+                        onChange={atualizarNome}
+                    />
                 </div>
                 <div>
-                    <input placeholder="Descrição" type="text" name="descricao" id="descricao" onChange={handleDescricao} />
+                    <input
+                        placeholder="Descrição"
+                        type="text"
+                        onChange={atualizarDescricao}
+                    />
                 </div>
                 <div>
-                    <input placeholder="Preço" type="text" name="preco" id="preco" onChange={handlePreco} />
+                    <input
+                        placeholder="Preço"
+                        type="text"
+                        onChange={atualizarPreco}
+                    />
                 </div>
                 <div>
-                    <input placeholder="URL Imagem" type="text" name="imagem" id="imagem" onChange={handleImagem} />
+                    <input
+                        placeholder="URL da Imagem"
+                        type="text"
+                        onChange={atualizarImagem}
+                    />
                 </div>
-                <input type="submit" value="Cadastrar" />
+                <div>
+                    <input
+                        placeholder="Estoque"
+                        type="text"
+                        onChange={atualizarEstoque}
+                    />
+                </div>
+                <button type="submit">Cadastrar Produto</button>
             </form>
         </>
-    )
+    );
 }
 
-export default CadastroProduto
+export default ProdutoRegistro;
