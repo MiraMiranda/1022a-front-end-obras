@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../../api/api'; // Certifique-se de que o arquivo api.ts está configurado
 
 export default function Cadastro() {
   const [nome, setNome] = useState('');
@@ -6,14 +7,40 @@ export default function Cadastro() {
   const [codigoEmpresarial, setCodigoEmpresarial] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [imagem, setImagem] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImagem(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica de cadastro (pode ser integrada com backend)
-    if (senha === confirmarSenha) {
-      console.log(nome, cpf, codigoEmpresarial, senha);
-    } else {
+    if (senha !== confirmarSenha) {
       alert('As senhas não coincidem!');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('nome', nome);
+    formData.append('cpf', cpf);
+    formData.append('codigoEmpresarial', codigoEmpresarial);
+    formData.append('senha', senha);
+    if (imagem) {
+      formData.append('imagem', imagem);
+    }
+
+    try {
+      const response = await api.post('/usuarios/cadastro', formData);
+      alert('Cadastro realizado com sucesso!');
+      console.log('Resposta do servidor:', response.data);
+    } catch (error: any) {
+      alert(
+        `Erro ao realizar cadastro: ${
+          error.response?.data?.mensagem || 'Erro desconhecido'
+        }`
+      );
     }
   };
 
@@ -51,6 +78,7 @@ export default function Cadastro() {
           value={confirmarSenha}
           onChange={(e) => setConfirmarSenha(e.target.value)}
         />
+        <input type="file" onChange={handleFileChange} />
         <button type="submit">Cadastrar</button>
       </form>
     </div>

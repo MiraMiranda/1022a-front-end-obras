@@ -1,26 +1,57 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import api from '../api/api'; // Certifique-se de que o arquivo api.ts está configurado
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
     user: any;
-    login: (userData: any) => void;
+    login: (token: string) => void;
     logout: () => void;
+    isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<any>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
 
-    function login(userData: any) {
-        setUser(userData);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            fetchUser();
+        }
+    }, []);
+
+    async function fetchUser() {
+        try {
+            const response = await api.get('/usuarios/me');
+            setUser(response.data);
+            setIsAuthenticated(true);
+        } catch (error) {
+            console.error('Erro ao buscar usuário:', error);
+            logout();
+        }
+    }
+
+    function login(token: string) {
+        localStorage.setItem('token', token);
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        fetchUser();
+        navigate('/dashboard'); // Redirecionar após login
     }
 
     function logout() {
+        localStorage.removeItem('token');
+        api.defaults.headers.common['Authorization'] = '';
         setUser(null);
+        setIsAuthenticated(false);
+        navigate('/login'); // Redirecionar após logout
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
             {children}
         </AuthContext.Provider>
     );
