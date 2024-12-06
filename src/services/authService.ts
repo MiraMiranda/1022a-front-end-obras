@@ -44,7 +44,7 @@ export async function cadastrarUsuario(
         if (imagem) formData.append('imagem', imagem);
 
         // Realizando a requisição de cadastro do usuário
-        const response = await axios.post('/usuarios/cadastro', formData, {
+        const response = await axios.post('/cadastro', formData, {  // Alterado de '/usuarios/cadastro' para '/cadastro'
             headers: { 'Content-Type': 'multipart/form-data' },
         });
 

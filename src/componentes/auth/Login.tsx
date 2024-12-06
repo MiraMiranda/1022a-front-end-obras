@@ -11,9 +11,11 @@ const Login: React.FC = () => {
             await login(codigoEmpresarial, senha); // Chama a função de login
             alert('Login bem-sucedido!');
             // Redirecionamento ou outra ação após login
+            // Exemplo: redirecionar para a página inicial ou dashboard
+            window.location.href = '/dashboard';
         } catch (error) {
             console.error('Erro ao fazer login:', error);
-            alert('Erro ao fazer login!');
+            alert('Erro ao fazer login! Verifique suas credenciais.');
         }
     };
 
