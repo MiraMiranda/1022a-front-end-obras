@@ -5,18 +5,23 @@ interface LoginResponse {
     token: string;  // O token retornado pela API
 }
 
+// Configuração base do Axios (caso precise usar em outras partes do seu código)
+const api = axios.create({
+    baseURL: 'https://one022a-marketplace-9o8f.onrender.com', // URL do back-end
+});
+
 // Função para login de usuário
 export async function login(codigoEmpresarial: string, senha: string): Promise<LoginResponse> {
     try {
-        // Tipagem do axios com o tipo LoginResponse para garantir que a resposta tenha um 'token'
-        const response = await axios.post<LoginResponse>('/usuarios/login', {
+        // Realizando a requisição de login usando o axios configurado com a URL base
+        const response = await api.post<LoginResponse>('/usuarios/login', {
             codigoEmpresarial,
             senha,
         });
 
-        // Aqui, a resposta já é tipada como LoginResponse, então o TypeScript garante que response.data tenha 'token'
+        // A resposta já está tipada como LoginResponse, então o TypeScript vai garantir que response.data.token exista
         if (response.data && response.data.token) {
-            return response.data;  // Não é necessário fazer cast porque já foi tipado
+            return response.data;
         } else {
             throw new Error('Token não encontrado na resposta');
         }
@@ -44,7 +49,7 @@ export async function cadastrarUsuario(
         if (imagem) formData.append('imagem', imagem);
 
         // Realizando a requisição de cadastro do usuário
-        const response = await axios.post('/cadastro', formData, {  // Alterado de '/usuarios/cadastro' para '/cadastro'
+        const response = await api.post('/cadastro', formData, {  // Usando o Axios configurado com baseURL
             headers: { 'Content-Type': 'multipart/form-data' },
         });
 
@@ -54,3 +59,5 @@ export async function cadastrarUsuario(
         throw new Error('Erro ao cadastrar usuário');
     }
 }
+
+export default api;
