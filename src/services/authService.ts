@@ -5,6 +5,11 @@ interface LoginResponse {
     token: string;  // O token retornado pela API
 }
 
+interface UserResponse {
+    nome: string; // Nome do usuário
+    codigoEmpresarial: string; // Código empresarial do usuário
+}
+
 // Configuração base do Axios (caso precise usar em outras partes do seu código)
 const api = axios.create({
     baseURL: 'https://one022a-marketplace-9o8f.onrender.com', // URL do back-end
@@ -21,6 +26,12 @@ export async function login(codigoEmpresarial: string, senha: string): Promise<L
 
         // A resposta já está tipada como LoginResponse, então o TypeScript vai garantir que response.data.token exista
         if (response.data && response.data.token) {
+            // Armazenando o token no localStorage para persistência
+            localStorage.setItem('token', response.data.token);
+
+            // Armazenar os dados do usuário
+            await getUserData(response.data.token); // Pode ser interessante armazenar os dados do usuário também
+
             return response.data;
         } else {
             throw new Error('Token não encontrado na resposta');
@@ -58,6 +69,31 @@ export async function cadastrarUsuario(
         console.error('Erro ao cadastrar usuário:', error);
         throw new Error('Erro ao cadastrar usuário');
     }
+}
+
+// Função para obter os dados do usuário com base no token
+export async function getUserData(token: string): Promise<UserResponse> {
+    try {
+        const response = await api.get<UserResponse>('/usuarios/dados', {
+            headers: {
+                Authorization: `Bearer ${token}`, // Passando o token no cabeçalho da requisição
+            },
+        });
+
+        // Armazenando os dados do usuário no localStorage
+        localStorage.setItem('user', JSON.stringify(response.data)); // Salva os dados do usuário
+
+        return response.data; // Retorna os dados do usuário
+    } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+        throw new Error('Erro ao carregar dados do usuário');
+    }
+}
+
+// Função para logout
+export function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
 }
 
 export default api;
