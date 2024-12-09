@@ -1,6 +1,5 @@
-// src/components/Cadastro.tsx
-
 import React, { useState } from 'react';
+import './Auth.css';
 
 const Cadastro = () => {
     const [nome, setNome] = useState('');
@@ -36,44 +35,51 @@ const Cadastro = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Nome:</label>
+        <form className="cadastro-container" onSubmit={handleSubmit}>
+            <h1 className="cadastro-title">Cadastro</h1>
+            <div className="cadastro-form-group">
+                <label className="cadastro-label">Nome:</label>
                 <input
+                    className="cadastro-input"
                     type="text"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     required
                 />
             </div>
-            <div>
-                <label>CPF:</label>
+            <div className="cadastro-form-group">
+                <label className="cadastro-label">CPF:</label>
                 <input
+                    className="cadastro-input"
                     type="text"
                     value={cpf}
                     onChange={(e) => setCpf(e.target.value)}
                     required
                 />
             </div>
-            <div>
-                <label>Código Empresarial:</label>
+            <div className="cadastro-form-group">
+                <label className="cadastro-label">Código Empresarial:</label>
                 <input
+                    className="cadastro-input"
                     type="text"
                     value={codigoEmpresarial}
                     onChange={(e) => setCodigoEmpresarial(e.target.value)}
                     required
                 />
             </div>
-            <div>
-                <label>Senha:</label>
+            <div className="cadastro-form-group">
+                <label className="cadastro-label">Senha:</label>
                 <input
+                    className="cadastro-input"
                     type="password"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
                     required
                 />
             </div>
-            <button type="submit">Cadastrar</button>
+            <button className="cadastro-button" type="submit">
+                Cadastrar
+            </button>
         </form>
     );
 };

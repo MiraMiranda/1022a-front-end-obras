@@ -1,0 +1,69 @@
+.perfil-container {
+    padding: 20px;
+    max-width: 400px;
+    margin: 50px auto;
+    background-color: #f5f5f5; /* Fundo do contêiner */
+    border-radius: 10px;
+    text-align: center;
+    color: #181D27; /* Texto */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: solid 2px black;
+
+    /* Flexbox para centralizar elementos */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.perfil-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000; /* Destaque do título */
+    margin-bottom: 20px;
+}
+
+.perfil-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.perfil-info {
+    margin-bottom: 20px;
+    text-align: left; /* Alinha os textos das informações à esquerda */
+    width: 100%; /* Largura total do contêiner */
+    max-width: 300px;
+    color: #181D27; /* Texto */
+}
+
+.perfil-info p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.perfil-info strong {
+    color: #505050; /* Destaque dos labels */
+}
+
+.perfil-logout-button {
+    background-color: #505050; /* Cor do botão */
+    color: #ffffff; /* Cor do texto do botão */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.perfil-logout-button:hover {
+    background-color: #a7a7a7; /* Hover do botão */
+    color: #222222;
+}
+
+.perfil-logout-button:active {
+    background-color: #254D32; /* Clique no botão */
+}
