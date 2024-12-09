@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Adicionado useNavigate para redirecionamento
+import { Link, useNavigate, Routes, Route } from 'react-router-dom';  // Importando Routes e Route
 import './App.css';
 import { useAuth } from './context/AuthContext';
+import Perfil from './componentes/Perfil';  // Importe o componente de Perfil
 
 type ProdutoType = {
   id: number;
@@ -9,39 +10,47 @@ type ProdutoType = {
   preco: string;
   descricao: string;
   imagem: string;
+  estoque: number;
 };
 
 function App() {
   const [produtos, setProdutos] = useState<ProdutoType[]>([]);
   const { user, token, logout } = useAuth();
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const navigate = useNavigate(); // Usando o hook para navegação programática
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   // useEffect para carregar produtos
   useEffect(() => {
-    fetch("https://one022a-marketplace-9o8f.onrender.com/produtos")
-      .then(resposta => resposta.json())
-      .then(dados => setProdutos(dados));
+    const fetchProdutos = async () => {
+      try {
+        const response = await fetch("https://one022a-marketplace-9o8f.onrender.com/produtos");
+        const data = await response.json();
+        setProdutos(data);
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error);
+      }
+    };
+    fetchProdutos();
   }, []);
 
-  // Se o usuário estiver logado, navega para a home
+  // Redirecionar se o usuário estiver logado
   useEffect(() => {
     if (token && user) {
-      navigate('/'); // Redireciona para a home se o usuário estiver logado
+      navigate('/');
     }
-  }, [token, user, navigate]); // O redirecionamento acontece toda vez que o token ou o user mudarem
+  }, [token, user, navigate]);
 
   const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
+    setIsDropdownOpen(prevState => !prevState);
   };
 
   const handleLogout = () => {
     logout();
-    setDropdownVisible(false); // Fecha o dropdown ao sair
+    setIsDropdownOpen(false);
   };
 
   if (token && !user) {
-    return <div>Carregando...</div>; // Mostrar algo enquanto os dados do usuário são carregados
+    return <div>Aguarde, carregando...</div>;
   }
 
   return (
@@ -60,15 +69,15 @@ function App() {
           {token && user ? (
             <div className="user-menu">
               <img
-                src="https://via.placeholder.com/40" // Ícone de usuário
+                src="https://via.placeholder.com/40"
                 alt="Usuário"
                 className="user-icon"
                 onClick={toggleDropdown}
               />
-              {dropdownVisible && (
+              {isDropdownOpen && (
                 <div className="dropdown-menu">
                   <p className="user-name">{user.nome}</p>
-                  <Link to="/perfil" className="dropdown-item">Perfil</Link>
+                  <Link to="/perfil" className="dropdown-item">Perfil</Link>  {/* Link para o Perfil */}
                   <button onClick={handleLogout} className="dropdown-item logout-button">
                     Sair
                   </button>
@@ -88,18 +97,35 @@ function App() {
         </div>
       </header>
 
+      <Routes>
+        <Route path="/" element={<div>Home</div>} />
+        <Route path="/produtos" element={<div>Produtos</div>} />
+        <Route path="/sobre" element={<div>Sobre</div>} />
+        <Route path="/contato" element={<div>Contato</div>} />
+        <Route path="/perfil" element={<Perfil />} />  {/* A rota para o perfil */}
+      </Routes>
+
       <div className="produtos-container">
-        <h1 className='titulo-produto'>Produtos</h1>
+        <h1 className="titulo-produto">Produtos</h1>
         <div className="produtos-list">
           {produtos.map(produto => (
             <div key={produto.id} className="produto-item">
               <h3 className="produto-nome">{produto.nome}</h3>
-              <div className='container-imagem'>
-                <img src={produto.imagem} alt="Imagem do produto" />
+              <div className="container-imagem">
+                <img src={produto.imagem} alt={`Imagem de ${produto.nome}`} />
               </div>
-              <p className="produto-preco">{produto.preco}</p>
+              <p className="produto-preco">Preço: {produto.preco}</p>
               <p className="produto-descricao">{produto.descricao}</p>
-              <button className="botao-comprar">Comprar</button>
+              <p className="produto-estoque">
+                Estoque: {produto.estoque > 0 ? produto.estoque : 'Indisponível'}
+              </p>
+              <button
+                className="botao-comprar"
+                onClick={() => alert(`Comprou ${produto.nome}`)}
+                disabled={produto.estoque === 0}
+              >
+                {produto.estoque > 0 ? 'Comprar' : 'Esgotado'}
+              </button>
             </div>
           ))}
         </div>

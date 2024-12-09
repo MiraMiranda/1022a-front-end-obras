@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/componentes/perfil.tsx","./src/componentes/auth/cadastro.tsx","./src/componentes/auth/login.tsx","./src/componentes/cadastroproduto/cadastroproduto.tsx","./src/context/authcontext.tsx","./src/services/api.ts","./src/services/authservice.ts"],"version":"5.6.2"}

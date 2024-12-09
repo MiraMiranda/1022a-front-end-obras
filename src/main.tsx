@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext'; // Adicionando o AuthProvi
 import Login from './componentes/auth/Login.tsx';  // Componente de Login
 import Cadastro from './componentes/auth/Cadastro.tsx';  // Componente de Cadastro
 import CadastroProduto from './componentes/cadastroproduto/CadastroProduto.tsx';  // Cadastro de Produto
+import Perfil from './componentes/Perfil';  // Importar o componente de Perfil
 
 // Definindo as rotas
 const router = createBrowserRouter([
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/cadastro-produto",
     element: <CadastroProduto />,
+  },
+  {
+    path: "/perfil",  // Definir a rota para a página de perfil
+    element: <Perfil />,
   },
 ]);
 

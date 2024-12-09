@@ -13,10 +13,28 @@ function ProdutoRegistro() {
     async function submeterFormulario(evento: FormEvent) {
         evento.preventDefault();
         try {
-            const resposta = await fetch("http://localhost:8000/produtos", {
+            // Pegar o token do localStorage
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("Você não está autenticado. Faça login para continuar.");
+                return;
+            }
+
+            console.log("Dados enviados:", {
+                id: produtoId,
+                nome: produtoNome,
+                descricao: produtoDescricao,
+                preco: produtoPreco,
+                imagem: produtoImagem,
+                estoque: produtoEstoque,
+            }); // Debug para verificar os dados enviados
+
+            const resposta = await fetch("https://one022a-marketplace-9o8f.onrender.com/produtos", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`, // Enviar o token no cabeçalho
                 },
                 body: JSON.stringify({
                     id: produtoId,
@@ -27,9 +45,10 @@ function ProdutoRegistro() {
                     estoque: produtoEstoque,
                 }),
             });
-            if (resposta.status !== 500) {
+
+            if (resposta.ok) {
                 alert("Produto cadastrado com sucesso!");
-                redirecionar("/");
+                redirecionar("/"); // Redireciona após o cadastro
             } else {
                 const mensagemErro = await resposta.text();
                 alert("Erro ao cadastrar produto: " + mensagemErro);
@@ -71,6 +90,7 @@ function ProdutoRegistro() {
                     <input
                         placeholder="ID do Produto"
                         type="text"
+                        value={produtoId} // Adicionado para refletir o estado
                         onChange={atualizarId}
                     />
                 </div>
@@ -78,6 +98,7 @@ function ProdutoRegistro() {
                     <input
                         placeholder="Nome do Produto"
                         type="text"
+                        value={produtoNome} // Adicionado para refletir o estado
                         onChange={atualizarNome}
                     />
                 </div>
@@ -85,6 +106,7 @@ function ProdutoRegistro() {
                     <input
                         placeholder="Descrição"
                         type="text"
+                        value={produtoDescricao} // Adicionado para refletir o estado
                         onChange={atualizarDescricao}
                     />
                 </div>
@@ -92,6 +114,7 @@ function ProdutoRegistro() {
                     <input
                         placeholder="Preço"
                         type="text"
+                        value={produtoPreco} // Adicionado para refletir o estado
                         onChange={atualizarPreco}
                     />
                 </div>
@@ -99,6 +122,7 @@ function ProdutoRegistro() {
                     <input
                         placeholder="URL da Imagem"
                         type="text"
+                        value={produtoImagem} // Adicionado para refletir o estado
                         onChange={atualizarImagem}
                     />
                 </div>
@@ -106,6 +130,7 @@ function ProdutoRegistro() {
                     <input
                         placeholder="Estoque"
                         type="text"
+                        value={produtoEstoque} // Adicionado para refletir o estado
                         onChange={atualizarEstoque}
                     />
                 </div>
