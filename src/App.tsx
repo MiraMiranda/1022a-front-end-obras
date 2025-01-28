@@ -4,9 +4,10 @@ import './App.css';
 import { useAuth } from './context/AuthContext';
 import Perfil from './componentes/Perfil';  // Importe o componente de Perfil
 import ProdutoRegistro from './componentes/cadastroproduto/CadastroProduto';  // Importe o componente de Cadastro de Produtos
+import AlterarProduto, { deletarProduto } from './componentes/alterarproduto/alterarProduto.tsx';  // Importe o componente AlterarProduto
 
 type ProdutoType = {
-  id: number;
+  id: string;
   nome: string;
   preco: string;
   descricao: string;
@@ -61,7 +62,7 @@ function App() {
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/produtos">Produtos</Link></li>
-            <li><Link to="/cadastro-produto">Cadastro de Produto</Link></li>  {/* Alterado para Cadastro de Produto */}
+            <li><Link to="/cadastro-produto">Cadastro de Produto</Link></li>
             <li><Link to="/sobre">Sobre</Link></li>
             <li><Link to="/contato">Contato</Link></li>
           </ul>
@@ -79,7 +80,7 @@ function App() {
               {isDropdownOpen && (
                 <div className="dropdown-menu">
                   <p className="user-name">{user.nome}</p>
-                  <Link to="/perfil" className="dropdown-item">Perfil</Link>  {/* Link para o Perfil */}
+                  <Link to="/perfil" className="dropdown-item">Perfil</Link>
                   <button onClick={handleLogout} className="dropdown-item logout-button">
                     Sair
                   </button>
@@ -87,15 +88,14 @@ function App() {
               )}
             </div>
           ) : (
-<div className="auth-buttons">
-  <Link to="/login">
-    <button className="login-button">Login</button>
-  </Link>
-  <Link to="/cadastro">
-    <button className="cadastro-button">Cadastro</button>
-  </Link>
-</div>
-
+            <div className="auth-buttons">
+              <Link to="/login">
+                <button className="login-button">Login</button>
+              </Link>
+              <Link to="/cadastro">
+                <button className="cadastro-button">Cadastro</button>
+              </Link>
+            </div>
           )}
         </div>
       </header>
@@ -104,8 +104,9 @@ function App() {
         <Route path="/produtos" element={<div>Produtos</div>} />
         <Route path="/sobre" element={<div>Sobre</div>} />
         <Route path="/contato" element={<div>Contato</div>} />
-        <Route path="/perfil" element={<Perfil />} />  {/* A rota para o perfil */}
-        <Route path="/cadastro-produto" element={<ProdutoRegistro />} />  {/* A rota para Cadastro de Produto */}
+        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/cadastro-produto" element={<ProdutoRegistro />} />
+        <Route path="/alterar-produto/:id" element={<AlterarProduto />} /> {/* Rota para Alterar Produto */}
       </Routes>
 
       <div className="produtos-container">
@@ -128,6 +129,18 @@ function App() {
                 disabled={produto.estoque === 0}
               >
                 {produto.estoque > 0 ? 'Comprar' : 'Esgotado'}
+              </button>
+              <button
+                className="botao-alterar"
+                onClick={() => navigate(`/alterar-produto/${produto.id}`)}
+              >
+                Alterar
+              </button>
+              <button
+                className="botao-deletar"
+                onClick={() => deletarProduto(produto.id)}
+              >
+                Deletar
               </button>
             </div>
           ))}
