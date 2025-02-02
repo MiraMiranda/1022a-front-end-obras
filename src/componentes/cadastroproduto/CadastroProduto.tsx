@@ -1,113 +1,83 @@
-import { useState, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import "./ProdutoRegistro.css"; // Importando o CSS
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function ProdutoRegistro() {
-    const redirecionar = useNavigate();
-    const [produtoId, alterarProdutoId] = useState("");
-    const [produtoNome, alterarProdutoNome] = useState("");
-    const [produtoDescricao, alterarProdutoDescricao] = useState("");
-    const [produtoPreco, alterarProdutoPreco] = useState("");
-    const [produtoImagem, alterarProdutoImagem] = useState("");
-    const [produtoEstoque, alterarProdutoEstoque] = useState("");
+const CadastroProduto = () => {
+    const [produtos, setProdutos] = useState([]);
+    const [novoProduto, setNovoProduto] = useState({
+        nome: '',
+        descricao: '',
+        preco: '',
+        estoque: '',
+        imagem: ''
+    });
 
-    async function submeterFormulario(evento: FormEvent) {
-        evento.preventDefault();
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                alert("Você não está autenticado. Faça login para continuar.");
-                return;
-            }
+    useEffect(() => {
+        carregarProdutos();
+    }, []);
 
-            const resposta = await fetch(
-                "https://one022a-marketplace-9o8f.onrender.com/produtos",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                        id: produtoId,
-                        nome: produtoNome,
-                        descricao: produtoDescricao,
-                        preco: produtoPreco,
-                        imagem: produtoImagem,
-                        estoque: produtoEstoque,
-                    }),
-                }
-            );
+    const carregarProdutos = () => {
+        axios.get('http://localhost:3000/produtos')
+            .then(response => {
+                setProdutos(response.data);
+            })
+            .catch(error => {
+                console.error('Erro ao carregar produtos:', error);
+            });
+    };
 
-            if (resposta.ok) {
-                alert("Produto cadastrado com sucesso!");
-                redirecionar("/");
-            } else {
-                const mensagemErro = await resposta.text();
-                alert("Erro ao cadastrar produto: " + mensagemErro);
-            }
-        } catch (erro) {
-            alert("Não foi possível conectar ao servidor.");
+    const handleChange = (e) => {
+        setNovoProduto({ ...novoProduto, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios.post('http://localhost:3000/produtos', novoProduto)
+            .then(() => {
+                alert('Produto cadastrado com sucesso!');
+                setNovoProduto({ nome: '', descricao: '', preco: '', estoque: '', imagem: '' });
+                carregarProdutos();
+            })
+            .catch(error => {
+                console.error('Erro ao cadastrar produto:', error);
+            });
+    };
+
+    const handleDelete = (id) => {
+        if (window.confirm('Tem certeza que deseja excluir este produto?')) {
+            axios.delete(`http://localhost:3000/produtos/${id}`)
+                .then(() => {
+                    alert('Produto excluído com sucesso!');
+                    carregarProdutos();
+                })
+                .catch(error => {
+                    console.error('Erro ao excluir produto:', error);
+                });
         }
-    }
-
-    // Atualizando os campos do formulário
-    const atualizarCampo = (campo: React.Dispatch<React.SetStateAction<string>>) => (evento: React.ChangeEvent<HTMLInputElement>) => {
-        campo(evento.target.value);
     };
 
     return (
-        <div className="produto-container">
-            <h1 className="produto-title">Cadastro de Produtos</h1>
-            <form onSubmit={submeterFormulario}>
-                <input
-                    className="produto-input"
-                    placeholder="ID do Produto"
-                    type="text"
-                    value={produtoId}
-                    onChange={atualizarCampo(alterarProdutoId)}
-                />
-                <input
-                    className="produto-input"
-                    placeholder="Nome do Produto"
-                    type="text"
-                    value={produtoNome}
-                    onChange={atualizarCampo(alterarProdutoNome)}
-                />
-                <input
-                    className="produto-input"
-                    placeholder="Descrição"
-                    type="text"
-                    value={produtoDescricao}
-                    onChange={atualizarCampo(alterarProdutoDescricao)}
-                />
-                <input
-                    className="produto-input"
-                    placeholder="Preço"
-                    type="text"
-                    value={produtoPreco}
-                    onChange={atualizarCampo(alterarProdutoPreco)}
-                />
-                <input
-                    className="produto-input"
-                    placeholder="URL da Imagem"
-                    type="text"
-                    value={produtoImagem}
-                    onChange={atualizarCampo(alterarProdutoImagem)}
-                />
-                <input
-                    className="produto-input"
-                    placeholder="Estoque"
-                    type="text"
-                    value={produtoEstoque}
-                    onChange={atualizarCampo(alterarProdutoEstoque)}
-                />
-                <button className="produto-button" type="submit">
-                    Cadastrar Produto
-                </button>
+        <div>
+            <h2>Cadastro de Produto</h2>
+            <form onSubmit={handleSubmit}>
+                <input type="text" name="nome" value={novoProduto.nome} onChange={handleChange} placeholder="Nome" required />
+                <input type="text" name="descricao" value={novoProduto.descricao} onChange={handleChange} placeholder="Descrição" required />
+                <input type="number" name="preco" value={novoProduto.preco} onChange={handleChange} placeholder="Preço" required />
+                <input type="number" name="estoque" value={novoProduto.estoque} onChange={handleChange} placeholder="Estoque" required />
+                <input type="text" name="imagem" value={novoProduto.imagem} onChange={handleChange} placeholder="URL da Imagem" required />
+                <button type="submit">Cadastrar Produto</button>
             </form>
+
+            <h2>Lista de Produtos</h2>
+            <ul>
+                {produtos.map(produto => (
+                    <li key={produto.id}>
+                        <strong>{produto.nome}</strong> - R$ {produto.preco}
+                        <button onClick={() => handleDelete(produto.id)}>Excluir</button>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
-}
+};
 
-export default ProdutoRegistro;
+export default CadastroProduto;

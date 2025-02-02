@@ -1,75 +1,54 @@
-// AlterarProduto.tsx (Adaptado para Front-End Obras)
-import { useParams } from "react-router-dom";
-import {FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../../services/api"; // Certifique-se de que o serviço API está configurado
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function AlterarProduto() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const [nome, setNome] = useState("");
-    const [descricao, setDescricao] = useState("");
-    const [preco, setPreco] = useState("");
-    const [imagem, setImagem] = useState("");
+const AlterarProduto = ({ produtoId, onProdutoAtualizado }) => {
+    const [produto, setProduto] = useState({
+        nome: '',
+        descricao: '',
+        preco: '',
+        estoque: '',
+        imagem: ''
+    });
 
-    async function handleForm(event: FormEvent) {
-        event.preventDefault();
-        try {
-            await api.put(`/produtos/${id}`, {
-                nome,
-                descricao,
-                preco,
-                imagem,
+    useEffect(() => {
+        axios.get(`http://localhost:3000/produtos/${produtoId}`)
+            .then(response => {
+                setProduto(response.data);
+            })
+            .catch(error => {
+                console.error('Erro ao buscar produto:', error);
             });
-            alert("Produto alterado com sucesso!");
-            navigate("/");
-        } catch (erro) {
-            console.error("Erro ao alterar produto:", erro);
-        }
-    }
+    }, [produtoId]);
+
+    const handleChange = (e) => {
+        setProduto({ ...produto, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios.put(`http://localhost:3000/produtos/${produtoId}`, produto)
+            .then(response => {
+                alert('Produto atualizado com sucesso!');
+                onProdutoAtualizado();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar produto:', error);
+            });
+    };
 
     return (
         <div>
-            <h1>Alterar Produto</h1>
-            <form onSubmit={handleForm}>
-                <input
-                    type="text"
-                    placeholder="Nome"
-                    value={nome}
-                    onChange={(e) => setNome(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Descrição"
-                    value={descricao}
-                    onChange={(e) => setDescricao(e.target.value)}
-                />
-                <input
-                    type="number"
-                    placeholder="Preço"
-                    value={preco}
-                    onChange={(e) => setPreco(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="URL da Imagem"
-                    value={imagem}
-                    onChange={(e) => setImagem(e.target.value)}
-                />
+            <h2>Alterar Produto</h2>
+            <form onSubmit={handleSubmit}>
+                <input type="text" name="nome" value={produto.nome} onChange={handleChange} placeholder="Nome" required />
+                <input type="text" name="descricao" value={produto.descricao} onChange={handleChange} placeholder="Descrição" required />
+                <input type="number" name="preco" value={produto.preco} onChange={handleChange} placeholder="Preço" required />
+                <input type="number" name="estoque" value={produto.estoque} onChange={handleChange} placeholder="Estoque" required />
+                <input type="text" name="imagem" value={produto.imagem} onChange={handleChange} placeholder="URL da Imagem" required />
                 <button type="submit">Salvar Alterações</button>
             </form>
         </div>
     );
-}
+};
 
 export default AlterarProduto;
-
-// Função de Deletar Produto (pode ser integrada em outro componente, como uma lista de produtos)
-export async function deletarProduto(id: string) {
-    try {
-        await api.delete(`/produtos/${id}`);
-        alert("Produto deletado com sucesso!");
-    } catch (erro) {
-        console.error("Erro ao deletar produto:", erro);
-    }
-}
